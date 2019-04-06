@@ -2,6 +2,7 @@
 // Thermistor - https://www.sunfounder.com/thermistor-sensor-module.html
 // Thermistor Code adapted from - https://www.sunfounder.com/learn/universal-kit-for-Arduino/lesson-8-thermistor-universal-kit.html
 // Basic code from - http://www.circuitbasics.com/how-to-set-up-an-ultrasonic-range-finder-on-an-arduino/
+// Motor control examples - https://howtomechatronics.com/tutorials/arduino/arduino-dc-motor-control-tutorial-l298n-pwm-h-bridge/
 #include <LiquidCrystal_I2C.h>
 #include <math.h>
 #define trigPinR 9
@@ -13,6 +14,10 @@
 #define analogPin A0 //the thermistor attach to 
 #define beta 4090 //the beta of the thermistor
 #define resistance 5100 //the value of the pull-down resistor
+#define MotorAPin 5 // Pin 5 controls MotorA
+#define MotorBPin 6 // Pin 6 controls MotorB
+
+int motorSpeed = 155;
 
 double Thermistor(int RawADC) {
  double Temp;
@@ -122,5 +127,15 @@ void loop() {
   lcd.print(String("Dir - ") + dir);
   lcd.setCursor(0,1);
   lcd.print(String(round(distanceL)) + "/" + String(round(distanceC)) + "/" + String(round(distanceR)));
+
+  if(dir = "LFT")
+    analogWrite(MotorBPin, motorSpeed);
+  else if(dir = "RGT")
+    analogWrite(MotorAPin, motorSpeed);
+  else
+  {
+    analogWrite(MotorAPin, motorSpeed);
+    analogWrite(MotorBPin, motorSpeed);
+  }
  
 }
