@@ -5,19 +5,24 @@
 // Motor control examples - https://howtomechatronics.com/tutorials/arduino/arduino-dc-motor-control-tutorial-l298n-pwm-h-bridge/
 #include <LiquidCrystal_I2C.h>
 #include <math.h>
-#define trigPinR 9
-#define trigPinC 10
-#define trigPinL 11
-#define echoPinR 2
-#define echoPinC 3
-#define echoPinL 4
+#define TrigL 2
+#define EchoL 3
+#define TrigC 4
+#define EchoC 5
+#define TrigR 7
+#define EchoR 6
 #define analogPin A0 //the thermistor attach to 
 #define beta 4090 //the beta of the thermistor
 #define resistance 5100 //the value of the pull-down resistor
-#define MotorAPin 5 // Pin 5 controls MotorA
-#define MotorBPin 6 // Pin 6 controls MotorB
+#define EnA 10
+#define In1 8
+#define In2 9
+#define EnB 11
+#define In3 12
+#define In4 13
 
-int motorSpeed = 155;
+int motorSpeedHigh = 135;
+int motorSpeedLow = 90;
 
 double Thermistor(int RawADC) {
  double Temp;
@@ -31,12 +36,18 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); // set the LCD address to 0x27 for a 16 char
 
 void setup() {
   Serial.begin (9600);
-  pinMode(trigPinR, OUTPUT);
-  pinMode(trigPinC, OUTPUT);
-  pinMode(trigPinL, OUTPUT);
-  pinMode(echoPinR, INPUT);
-  pinMode(echoPinC, INPUT);
-  pinMode(echoPinL, INPUT);
+  pinMode(TrigL, OUTPUT);
+  pinMode(EchoL, INPUT);
+  pinMode(TrigC, OUTPUT);
+  pinMode(EchoC, INPUT);
+  pinMode(TrigR, OUTPUT);
+  pinMode(EchoR, INPUT);
+  pinMode(EnA, OUTPUT);
+  pinMode(In1, OUTPUT);
+  pinMode(In2, OUTPUT);
+  pinMode(EnB, OUTPUT);
+  pinMode(In3, OUTPUT);
+  pinMode(In4, OUTPUT);
   lcd.init();
   lcd.backlight();
 }
@@ -49,26 +60,26 @@ void loop() {
   temp=Thermistor(val);
   
   float durationR, durationC, durationL, distanceR, distanceC, distanceL;
-  digitalWrite(trigPinR, LOW); 
+  digitalWrite(TrigR, LOW); 
   delayMicroseconds(2);
-  digitalWrite(trigPinR, HIGH);
+  digitalWrite(TrigR, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPinR, LOW);
-  durationR = pulseIn(echoPinR, HIGH);
+  digitalWrite(TrigR, LOW);
+  durationR = pulseIn(EchoR, HIGH);
   Serial.println(String(durationR) + " (R)");
-  digitalWrite(trigPinC, LOW); 
+  digitalWrite(TrigC, LOW); 
   delayMicroseconds(2);
-  digitalWrite(trigPinC, HIGH);
+  digitalWrite(TrigC, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPinC, LOW);
-  durationC = pulseIn(echoPinC, HIGH);
+  digitalWrite(TrigC, LOW);
+  durationC = pulseIn(EchoC, HIGH);
   Serial.println(String(durationC) + " (C)");
-  digitalWrite(trigPinL, LOW); 
+  digitalWrite(TrigL, LOW); 
   delayMicroseconds(2);
-  digitalWrite(trigPinL, HIGH);
+  digitalWrite(TrigL, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPinL, LOW);
-  durationL = pulseIn(echoPinL, HIGH);
+  digitalWrite(TrigL, LOW);
+  durationL = pulseIn(EchoL, HIGH);
   Serial.println(String(durationL) + " (L)");
   float spdSnd = 331.4 + (0.606 * temp) + 0.62;
   distanceR = (durationR / 2) * (spdSnd / 10000);
@@ -123,19 +134,38 @@ void loop() {
   else
     dir = "RGT";
  }
-  lcd.setCursor(0,0);
-  lcd.print(String("Dir - ") + dir);
-  lcd.setCursor(0,1);
-  lcd.print(String(round(distanceL)) + "/" + String(round(distanceC)) + "/" + String(round(distanceR)));
+ 
+ lcd.setCursor(0,0);
+ lcd.print(String("Chose - ") + dir);
+ lcd.setCursor(0,1);
+ lcd.print(String(round(distanceL)) + "/" + String(round(distanceC)) + "/" + String(round(distanceR)));
 
   if(dir = "LFT")
-    analogWrite(MotorBPin, motorSpeed);
+  {
+    analogWrite(EnA, motorSpeedHigh);
+    analogWrite(EnB, motorSpeedLow);
+    digitalWrite(In1, HIGH);
+    digitalWrite(In2, LOW);
+    digitalWrite(In3, LOW);
+    digitalWrite(In4, HIGH);
+  }
   else if(dir = "RGT")
-    analogWrite(MotorAPin, motorSpeed);
+  {
+    analogWrite(EnA, motorSpeedLow);
+    analogWrite(EnB, motorSpeedHigh);
+    digitalWrite(In1, LOW);
+    digitalWrite(In2, HIGH);
+    digitalWrite(In3, HIGH);
+    digitalWrite(In4, LOW);
+  }
   else
   {
-    analogWrite(MotorAPin, motorSpeed);
-    analogWrite(MotorBPin, motorSpeed);
+    analogWrite(EnA, motorSpeedHigh);
+    analogWrite(EnB, motorSpeedHigh);
+    digitalWrite(In1, HIGH);
+    digitalWrite(In2, LOW);
+    digitalWrite(In3, HIGH);
+    digitalWrite(In4, LOW);
   }
  
 }
