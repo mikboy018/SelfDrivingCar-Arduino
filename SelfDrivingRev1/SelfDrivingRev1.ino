@@ -21,8 +21,9 @@
 #define In3 12
 #define In4 13
 
-int motorSpeedHigh = 135;
-int motorSpeedLow = 90;
+int motorSpeedHigh = 90;
+int motorSpeedLow = 75;
+String dir = "FWD";
 
 double Thermistor(int RawADC) {
  double Temp;
@@ -53,6 +54,7 @@ void setup() {
 }
 
 void loop() {
+  delay(500);
   int val;                
   double temp; 
   String dir = "";           
@@ -138,34 +140,40 @@ void loop() {
  lcd.setCursor(0,0);
  lcd.print(String("Chose - ") + dir);
  lcd.setCursor(0,1);
- lcd.print(String(round(distanceL)) + "/" + String(round(distanceC)) + "/" + String(round(distanceR)));
+ lcd.print(String(round(distanceL)) + "/" + String(round(distanceC)) + "/" + String(round(distanceR)) + "    ");
 
-  if(dir = "LFT")
-  {
-    analogWrite(EnA, motorSpeedHigh);
-    analogWrite(EnB, motorSpeedLow);
-    digitalWrite(In1, HIGH);
-    digitalWrite(In2, LOW);
-    digitalWrite(In3, LOW);
-    digitalWrite(In4, HIGH);
-  }
-  else if(dir = "RGT")
-  {
-    analogWrite(EnA, motorSpeedLow);
-    analogWrite(EnB, motorSpeedHigh);
-    digitalWrite(In1, LOW);
-    digitalWrite(In2, HIGH);
-    digitalWrite(In3, HIGH);
-    digitalWrite(In4, LOW);
-  }
-  else
-  {
-    analogWrite(EnA, motorSpeedHigh);
-    analogWrite(EnB, motorSpeedHigh);
-    digitalWrite(In1, HIGH);
-    digitalWrite(In2, LOW);
-    digitalWrite(In3, HIGH);
-    digitalWrite(In4, LOW);
-  }
+ if(dir == "FWD")
+ {
+  Serial.println("Moving forward");
+
+  digitalWrite(In1, LOW);
+  digitalWrite(In2, HIGH);
+  digitalWrite(In3, LOW);
+  digitalWrite(In4, HIGH);
+  analogWrite(EnA, motorSpeedHigh);
+  analogWrite(EnB, motorSpeedHigh);
+ }
+ else if(dir == "RGT")
+ {
+  Serial.println("Turning Right");
+
+  digitalWrite(In1, HIGH);
+  digitalWrite(In2, LOW);
+  digitalWrite(In3, LOW);
+  digitalWrite(In4, HIGH);
+  analogWrite(EnA, motorSpeedLow);
+  analogWrite(EnB, motorSpeedLow);
+ }
+  else if(dir == "LFT")
+ {
+  Serial.println("Turning Left");
+
+  digitalWrite(In1, LOW);
+  digitalWrite(In2, HIGH);
+  digitalWrite(In3, HIGH);
+  digitalWrite(In4, LOW);
+  analogWrite(EnA, motorSpeedLow);
+  analogWrite(EnB, motorSpeedLow);
+ }
  
 }
