@@ -115,26 +115,69 @@ void loop() {
   delay(500);*/
 
  //lcd.print(distanceL + "/" + distanceC + "/" + distanceR);
- if(distanceL >= 400 || distanceL == 0)
+ if(distanceL > 400)
+ { 
   distanceL = 400;
- if(distanceC >= 400 || distanceC == 0)
-  distanceC = 400;
- if(distanceR >= 400 || distanceR == 0)
-  distanceR = 400;
-
- if(distanceL >= distanceR)
+ }
+ else if (distanceL <= 10)
  {
-  if(distanceC >= distanceL)
-    dir = "FWD";
+  distanceL = 0;
+ }
+ 
+ if(distanceC > 400)
+ {
+  distanceC = 400;
+ }
+ else if (distanceC <= 10)
+ {
+  distanceC = 0;
+ }
+ 
+ if(distanceR > 400)
+ {
+  distanceR = 400;
+ }
+ else if (distanceR <= 10)
+ {
+  distanceR = 0;
+ }
+
+ if (distanceC < 200)
+ {
+  if( distanceC > 0 && distanceR > 0 && distanceL > 0)
+  {
+    if(distanceL >= distanceR)
+    {
+      if(distanceC >= distanceL)
+      {
+        dir = "FWD";
+      }
+      else
+      {
+        dir = "LFT";
+      }
+    
+    } 
+    else
+    {
+      if(distanceC >= distanceR)
+      { 
+        dir = "FWD";
+      }
+      else
+      {
+        dir = "RGT";
+      }
+    }
+  } 
   else
-    dir = "LFT";
+  {
+    dir = "BCK";
+  }
  }
  else
  {
-  if(distanceC >= distanceR)
-    dir = "FWD";
-  else
-    dir = "RGT";
+  dir = "FWD";
  }
  
  lcd.setCursor(0,0);
@@ -157,10 +200,10 @@ void loop() {
  {
   Serial.println("Turning Right");
 
-  digitalWrite(In1, HIGH);
-  digitalWrite(In2, LOW);
-  digitalWrite(In3, LOW);
-  digitalWrite(In4, HIGH);
+  digitalWrite(In1, LOW);
+  digitalWrite(In2, HIGH);
+  digitalWrite(In3, HIGH);
+  digitalWrite(In4, LOW);
   analogWrite(EnA, motorSpeedLow);
   analogWrite(EnB, motorSpeedLow);
  }
@@ -168,8 +211,19 @@ void loop() {
  {
   Serial.println("Turning Left");
 
-  digitalWrite(In1, LOW);
-  digitalWrite(In2, HIGH);
+  digitalWrite(In1, HIGH);
+  digitalWrite(In2, LOW);
+  digitalWrite(In3, LOW);
+  digitalWrite(In4, HIGH);
+  analogWrite(EnA, motorSpeedLow);
+  analogWrite(EnB, motorSpeedLow);
+ }
+ else
+ {
+  Serial.println("Backing Up");
+
+  digitalWrite(In1, HIGH);
+  digitalWrite(In2, LOW);
   digitalWrite(In3, HIGH);
   digitalWrite(In4, LOW);
   analogWrite(EnA, motorSpeedLow);
