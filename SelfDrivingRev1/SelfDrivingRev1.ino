@@ -25,8 +25,8 @@
 #define In4 13
 
 // Motor Variables
-int motorSpeedHigh = 90;
-int motorSpeedLow = 75;
+int motorSpeedHigh = 100;
+int motorSpeedLow = 80;
 // Direction chosen based on comparison of three ranges
 String dir = "FWD";
 
@@ -78,7 +78,7 @@ void loop() {
   determineDirection(distanceL, distanceC, distanceR);
   drive();
 
-  printDirection();
+  printDirection(distanceL, distanceC, distanceR);
 }
 
 // checks Ultrasonic Sensor based on specified pins, returns duration betweent trigger and echo
@@ -111,7 +111,7 @@ double sensorDuration(int trigPin, int echoPin, double sndSpd, char dir)
 // compares left, center, and right distances for determining direction
 void determineDirection(double distanceL, double distanceC, double distanceR)
 {
- if (distanceC < 200)
+ if (distanceC < 75)
  {
   if( distanceC > 0 && distanceR > 0 && distanceL > 0)
   {
@@ -173,7 +173,7 @@ void drive()
     digitalWrite(In3, HIGH);
     digitalWrite(In4, LOW);
     analogWrite(EnA, motorSpeedLow);
-    analogWrite(EnB, motorSpeedLow);
+    analogWrite(EnB, motorSpeedHigh);
   }
   else if(dir == "LFT")
   {
@@ -183,7 +183,7 @@ void drive()
     digitalWrite(In2, LOW);
     digitalWrite(In3, LOW);
     digitalWrite(In4, HIGH);
-    analogWrite(EnA, motorSpeedLow);
+    analogWrite(EnA, motorSpeedHigh);
     analogWrite(EnB, motorSpeedLow);
   }
   else
@@ -200,7 +200,7 @@ void drive()
 }
 
 // Outputs direction vehicle chose to travel and calculated distances
-void printDirection()
+void printDirection(double distanceL, double distanceC, double distanceR)
 {
   lcd.setCursor(0,0);
   lcd.print(String("Chose - ") + dir);
